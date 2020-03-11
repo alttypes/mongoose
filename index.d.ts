@@ -3786,18 +3786,21 @@ declare module "mongoose" {
           docArr: Types.DocumentArray<{a: Date, b: Types.ObjectId, num: number}>
       }
       type LooseComplexObject = LooseType<ComplexObject>;
+
+      /** Used to check types which could be undefined because they are optional */
+      type NotUndef<T> = T extends undefined ? never : T;
   
-      type t_LooseTypeComplexBaseUnchanged = TypeEquals<ComplexObject['num'], LooseComplexObject['num']>;
+      type t_LooseTypeComplexBaseUnchanged = TypeEquals<ComplexObject['num'], NotUndef<LooseComplexObject['num']>>;
       type t_LooseTypeComplexBaseUnchangedNeg = Invert<TypeEquals<boolean, LooseComplexObject['num']>>;
       type t_LooseTypeComplexBaseChanged = TypeExtends<[string], [LooseComplexObject['foo']]>;
       type t_LooseTypeComplexBaseChangedNeg = Invert<TypeExtends<number, LooseComplexObject['foo']>>;
-      type t_LooseTypeComplexBaseArrChanged = TypeExtends<string, LooseComplexObject['objArr'][number]>;
-      type t_LooseTypeComplexBaseArrChangedNeg = Invert<TypeExtends<number, LooseComplexObject['objArr'][number]>>;
+      type t_LooseTypeComplexBaseArrChanged = TypeExtends<string, NotUndef<LooseComplexObject['objArr']>[number]>;
+      type t_LooseTypeComplexBaseArrChangedNeg = Invert<TypeExtends<number, NotUndef<LooseComplexObject['objArr']>[number]>>;
   
-      type t_LooseTypeComplexNestedArrChanged = TypeExtends<number, LooseComplexObject['docArr'][number]['a']>;
-      type t_LooseTypeComplexNestedArrChangedNeg = Invert<TypeExtends<string, LooseComplexObject['docArr'][number]['a']>>;
+      type t_LooseTypeComplexNestedArrChanged = TypeExtends<number, NotUndef<LooseComplexObject['docArr']>[number]['a']>;
+      type t_LooseTypeComplexNestedArrChangedNeg = Invert<TypeExtends<string, NotUndef<LooseComplexObject['docArr']>[number]['a']>>;
   
-      type t_LooseTypeStringUnionToString = TypeEquals<[LooseComplexObject['strUnion']], [ComplexObject['strUnion']]>;
+      type t_LooseTypeStringUnionToString = TypeEquals<[NotUndef<LooseComplexObject['strUnion']>], [ComplexObject['strUnion']]>;
   
       type LooseMongooseDoc = LooseType<TestDoc>;
       type LooseRawDoc = LooseType<TestDocObject>;
@@ -3815,8 +3818,8 @@ declare module "mongoose" {
           & t_LooseTypeStringUnionToString & t_LooseTypeMongooseDoc
       >;
   
-      type DocToObjectReturnType = ReturnType<TestDoc['toObject']>;
-      type DocToJSONReturnType = ReturnType<TestDoc['toJSON']>;
+      type DocToObjectReturnType = ReturnType<NotUndef<TestDoc['toObject']>>;
+      type DocToJSONReturnType = ReturnType<NotUndef<TestDoc['toJSON']>>;
       type DocQuery = ReturnType<mongoose.Model<TestDoc>['find']>;
       type DocLeanQuery = ReturnType<DocQuery['lean']>;
       type t_toObjectRetTypeIsLeanDoc = TypeEquals<LeanTestDoc, DocToObjectReturnType>;
