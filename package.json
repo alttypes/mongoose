@@ -1,0 +1,38 @@
+{
+  "name": "@alttypes/mongoose",
+  "version": "0.9.1",
+  "description": "Alternate typings for mongoose which are a little more demanding but also much more accurate",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "/index.d.ts"
+  ],
+  "scripts": {
+    "test": "tsc -p .",
+    "prepublish": "tsc -p ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alttypes/mongoose.git"
+  },
+  "types": "index.d.ts",
+  "keywords": [
+    "typescript",
+    "mongoose",
+    "mongodb"
+  ],
+  "author": "Richard Bateman <rbateman@gradecam.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alttypes/mongoose/issues"
+  },
+  "homepage": "https://github.com/alttypes/mongoose#readme",
+  "dependencies": {
+    "@types/events": "^3.0.0",
+    "@types/mongodb": "^3.5.2",
+    "advanced-type-tests": "^1.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}
