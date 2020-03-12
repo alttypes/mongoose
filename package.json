@@ -1,6 +1,6 @@
 {
   "name": "@alttypes/mongoose",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Alternate typings for mongoose which are a little more demanding but also much more accurate",
   "main": "dist/index.js",
   "files": [
