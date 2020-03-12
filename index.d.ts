@@ -2942,6 +2942,7 @@ declare module "mongoose" {
      */
     export var Model: Model<any>;
     interface ModelBase<T extends Document, QueryHelpers = {}> {
+      new(): T;
       /**
        * Model constructor
        * Provides the interface to MongoDB collections as well as creates document instances.
@@ -2958,8 +2959,7 @@ declare module "mongoose" {
        *   Model#ensureIndexes. If an error occurred it is passed with the event.
        *   The fields, options, and index name are also passed.
        */
-      new(doc: LooseType<T>): T;
-      new(): T;
+      new(doc?: LooseType<T>): T;
   
       /**
        * Requires a replica set running MongoDB >= 3.6.0. Watches the underlying collection for changes using MongoDB change streams.
@@ -3426,7 +3426,7 @@ declare module "mongoose" {
        * @param options.validateBeforeSave set to false to save without validating.
        * @param fn optional callback
        */
-      save?(options?: SaveOptions, fn?: (err: any, product: this) => void): Promise<this>;
+      save?(options: SaveOptions, fn?: (err: any, product: this) => void): Promise<this>;
       save?(fn?: (err: any, product: this) => void): Promise<this>;
   
       /**
@@ -3693,6 +3693,10 @@ declare module "mongoose" {
   
       // TODO: Fix TypeEquals to work fully with union types
       // type t_LeanDocFieldNamesSameAsBaseDoc = TypeEquals<TestDocFields, LeanTestDocFields>;
+
+      // Test that the return value of Save is correct
+      type SaveRetVal = ReturnType<NotUndef<TestDoc['save']>>;
+      type t_SaveRetValCorrect = TypeEquals<SaveRetVal, Promise<TestDoc>>;
   
       // Test the basic array type to make sure it works
       type StringArray = string[];
@@ -3750,6 +3754,7 @@ declare module "mongoose" {
       type t_LeanDocNoHasDocFields = Invert<TypeExtends<'ownerDocument', keyof LeanTestDoc>>;
   
       type TESTAGG_DocTests1 = NotAny<Yes
+          & t_SaveRetValCorrect
           & t_LeanDocNoHasDocFields & t_DocHasDocFields
           & t_LeanDocFieldsRetainNonArrTypesObj & t_DocFieldsRetainTypesAllSame
           & t_LeanSubDocArrayNotAny & t_LeanDocArrayNotAny & t_LeanSubDocArrayTypeExtracted
@@ -3832,14 +3837,25 @@ declare module "mongoose" {
       >;
   
       /////////////////////////////////
-      // Tests for Document and Query
+      // Tests for Model / Document
       /////////////////////////////////
+
+      type TestDocModel = Model<TestDoc>;
+      type constructorParam = NotUndef<ConstructorParameters<TestDocModel>[0]>;
+      type instanceType = InstanceType<TestDocModel>;
+      type t_ConstructTypeCorrect = TypeEquals<instanceType, TestDoc>;
+      type t_ConstructParamCorrect = TypeEquals<constructorParam, LooseType<TestDoc>>;
+
+      type TESTAGG_ModelTests = NotAny<Yes
+        & t_ConstructTypeCorrect & t_ConstructParamCorrect
+      >;
   
       type AllTests = NotAny<Yes
           & TESTAGG_DocTests1
           & TESTAGG_DocTests2
           & TESTAGG_LooseTypes
           & TESTAGG_DocFuncTests
+          & TESTAGG_ModelTests
       >;
     }
   }
