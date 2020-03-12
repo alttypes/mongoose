@@ -1753,6 +1753,9 @@ declare module "mongoose" {
       type TreatAsPrimitives = actualPrimitives |
           Date | RegExp | Symbol | Error | BigInt | Types.ObjectId;
       type NotObject<T> = T extends TreatAsPrimitives ? T : T extends object ? never : T;
+
+      type GenericConstructable = {new(...args: any[]): any};
+      type Unconstructable<T extends object> = T extends GenericConstructable ? Pick<T, keyof T> : T;
   
       type LeanType<T> =
           T extends SuperUnlikelyType | TreatAsPrimitives ? T : // Handle "any" and all primitives
@@ -2942,7 +2945,6 @@ declare module "mongoose" {
      */
     export var Model: Model<any>;
     interface ModelBase<T extends Document, QueryHelpers = {}> {
-      new(): T;
       /**
        * Model constructor
        * Provides the interface to MongoDB collections as well as creates document instances.
@@ -3392,7 +3394,11 @@ declare module "mongoose" {
       /** Creates a Query, applies the passed conditions, and returns the Query. */
       where(path: string, val?: any): Query<any> & QueryHelpers;
     }
-    type Model<T extends Document, StaticFuncs = {}, QueryHelpers = {}> = StaticFuncs & ModelBase<T, QueryHelpers> & NodeJS.EventEmitter & ModelProperties;
+    type Model<T extends Document, StaticFuncs extends object = {}, QueryHelpers = {}> =
+        ModelBase<T, QueryHelpers>
+        & _TypeHelpers.Unconstructable<StaticFuncs>
+        & NodeJS.EventEmitter
+        & ModelProperties;
   
     interface DocumentInterface {
       /** Signal that we desire an increment of this documents version. */
