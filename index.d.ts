@@ -2968,7 +2968,8 @@ declare module "mongoose" {
        * This function does not trigger any middleware. In particular, it does not trigger aggregate middleware.
        * @param options See https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#watch
        */
-      watch(options?: mongodb.ChangeStreamOptions & { session?: ClientSession }): mongodb.ChangeStream;
+      watch(pipeline: any[], options?: mongodb.ChangeStreamOptions & { session?: ClientSession }): mongodb.ChangeStream<LeanDocument<T>>;
+      watch(options?: mongodb.ChangeStreamOptions & { session?: ClientSession }): mongodb.ChangeStream<LeanDocument<T>>;
   
       /**
        * Translate any aliases fields/conditions so the final query or document object is pure

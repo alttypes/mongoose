@@ -31,14 +31,14 @@
     "advanced-type-tests": "^1.0.3"
   },
   "devDependencies": {
-    "@types/node": ">= 10.0.0",
     "@types/events": "^3.0.0",
-    "@types/mongodb": ">= 3.1.0",
+    "@types/mongodb": ">= 3.5.5",
+    "@types/node": "^13.11.0",
     "typescript": "^3.8.3"
   },
   "peerDependencies": {
     "@types/node": ">= 10.0.0",
     "@types/events": "^3.0.0",
-    "@types/mongodb": ">= 3.1.0"
+    "@types/mongodb": ">= 3.5.5"
   }
 }
