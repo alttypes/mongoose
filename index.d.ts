@@ -1724,6 +1724,7 @@ declare module "mongoose" {
      */
     type LeanDocument<T> =
       [T] extends [_TypeHelpers.SuperUnlikelyType] ? T :
+      T extends null ? T :
       [T] extends [Document<infer U>] ? _TypeHelpers.LeanObject<_TypeHelpers.ExcludeFunctions<U>> :
       // [T] extends [Types.Subdocument<infer U>] ? _TypeHelpers.LeanObject<_TypeHelpers.ExcludeFunctions<U>> :
       // [T] extends [MongooseDocument<infer U>] ? _TypeHelpers.LeanObject<_TypeHelpers.ExcludeFunctions<U>> :
@@ -1765,7 +1766,8 @@ declare module "mongoose" {
           T;
       type PickU<T, K extends keyof T> = T extends any ? {[P in K]: T[P]} : never;
   
-      type LeanObject<T extends object> = {
+
+      type LeanObject<T extends object|null> = T extends null ? T : {
           [Key in keyof T]:
               [T[Key]] extends [SuperUnlikelyType | TreatAsPrimitives] ? T[Key] : // (matches any)
               [T[Key]] extends [unknown[]] ? LeanType<T[Key][number]>[] :
@@ -3640,6 +3642,10 @@ declare module "mongoose" {
   
         fooFunction(): void;
       }
+
+      type LeanNull = LeanDocument<null>;
+      type t_LeanNulIsNull = TypeEquals<LeanNull, null>;
+
       type TestSubdocObjectNoFunc = _TypeHelpers.ExcludeFunctions<TestSubdocObject>;
       type f = keyof TestSubdocObjectNoFunc;
       type TestSubdoc = Types.Subdocument<TestSubdocObject>;
@@ -3769,6 +3775,7 @@ declare module "mongoose" {
           & t_LeanSubDocArrayNotAny & t_LeanDocArrayNotAny & t_LeanSubDocArrayTypeExtracted
           & t_GetArrayTypeFromSubdocArray
           & t_LeanDocInArrayTypeCorrect & t_DocArrayHasSpecial// & t_LeanDocArrayTypeCorrect
+          & t_LeanNulIsNull
       >;
   
       type TESTAGG_DocTests2 = NotAny<Yes
