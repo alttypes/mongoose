@@ -5,7 +5,7 @@
         "outDir": "dist/",
         "declarationMap": true,
         "noUnusedLocals": true,
-        "strictNullChecks": true,
+        "strict": true,
         "pretty": true,
     }
 }
