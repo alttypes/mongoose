@@ -235,6 +235,21 @@ declare module "mongoose" {
           then: Promise<Connection>["then"];
           catch: Promise<Connection>["catch"];
         };
+
+      /** The password specified in the URI */
+      pass: string;
+
+      /**
+       * The port portion of the URI. If multiple hosts, such as a replica set,
+       * this will contain the port from the first host name in the URI.
+       */
+      port: number;
+
+      /** Declares a plugin executed on all schemas you pass to `conn.model()` */
+      plugin(fn: (schema: Schema, opts?: any) => void, opts?: any): Connection;
+
+      /** The plugins that will be applied to all models created on this connection. */
+      plugins: Array<any>;
   
       /** Helper for dropDatabase() */
       dropDatabase(callback?: (err: any) => void): Promise<any>;
@@ -305,6 +320,24 @@ declare module "mongoose" {
       models: { [index: string]: Model<any> };
   
       /**
+       * Returns the [MongoDB driver `MongoClient`](http://mongodb.github.io/node-mongodb-native/3.5/api/MongoClient.html) instance
+       * that this connection uses to talk to MongoDB.
+       */
+      getClient(): mongodb.MongoClient;
+  
+       /**
+        * The host name portion of the URI. If multiple hosts, such as a replica set,
+        * this will contain the first host name in the URI
+        */
+      host: string;
+   
+       /**
+        * A number identifier for this connection. Used for debugging when
+        * you have [multiple connections](/docs/connections.html#multiple_connections).
+        */
+      id: number;
+
+      /**
        * Connection ready state
        * 0 = disconnected
        * 1 = connected
@@ -316,6 +349,9 @@ declare module "mongoose" {
   
       /** mapping of ready states */
       states: ConnectionStates;
+
+      /** Watches the entire underlying database for changes. Similar to [`Model.watch()`](/docs/api/model.html#model_Model.watch). */
+      watch(pipeline?: Array<any>, options?: mongodb.ChangeStreamOptions): mongodb.ChangeStream;
     }
   
     /**
