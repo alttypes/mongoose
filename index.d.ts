@@ -1726,7 +1726,7 @@ declare module "mongoose" {
     // object, so this will figure out what that type is. Assuming that type T (in T or T[]) is
     // a mongoose.Document<U> it will return U or U[]
     type LeanDocumentOrArray<T> =
-      T extends _TypeHelpers.SuperUnlikelyType ? T :
+      [0] extends [1 & T] ? T :
       T extends unknown[] ? LeanDocument<T[number]>[] :
       LeanDocument<T>;
 
@@ -1736,7 +1736,7 @@ declare module "mongoose" {
      * -- basically exactly the same as you would get if you called .toObject, et al
      */
     type LeanDocument<T> =
-      [T] extends [_TypeHelpers.SuperUnlikelyType] ? T :
+      [0] extends [1 & T] ? T :
       T extends null ? T :
       [T] extends [Document<infer U>] ? _TypeHelpers.LeanObject<_TypeHelpers.ExcludeFunctions<U>> :
       // [T] extends [Types.Subdocument<infer U>] ? _TypeHelpers.LeanObject<_TypeHelpers.ExcludeFunctions<U>> :
@@ -1772,7 +1772,8 @@ declare module "mongoose" {
       type Unconstructable<T extends object> = T extends GenericConstructable ? Pick<T, keyof T> : T;
 
       type LeanType<T> =
-          T extends SuperUnlikelyType | TreatAsPrimitives ? T : // Handle "any" and all primitives
+          0 extends [1 & T] ? T :
+          T extends TreatAsPrimitives ? T : // Handle "any" and all primitives
           [T] extends [Document<infer U>] ? LeanDocument<U> :
           [T] extends [MongooseDocument<infer U>] ? LeanDocument<U> :
           // [T] extends [Types.Subdocument<infer U>] ? LeanDocument<U> :
@@ -1782,7 +1783,8 @@ declare module "mongoose" {
 
       type LeanObject<T extends object|null> = T extends null ? T : {
           [Key in keyof T]:
-              [T[Key]] extends [SuperUnlikelyType | TreatAsPrimitives] ? T[Key] : // (matches any)
+              [0] extends [1 & T[Key]] ? T[Key] : // (matches any)
+              [T[Key]] extends [TreatAsPrimitives] ? T[Key] :
               [T[Key]] extends [unknown[]] ? LeanType<T[Key][number]>[] :
               [T[Key]] extends [MongooseDocument<any>] ? LeanDocument<T[Key]> :
               T[Key];
@@ -1793,10 +1795,10 @@ declare module "mongoose" {
        * extend the given NotType -- this is needed because, e.g. any extends Function evaluates
        * to true, so an "any" will be selected as well
        */
-      type SuperUnlikelyType = AUT.SuperUnlikelyType;
       type FlagType<Base, Type> = {
           [Key in keyof Base]: Base[Key] extends Type ? Key : never
       };
+      type SuperUnlikelyType = Array<boolean> & {___2: 1};
       type DisallowedNames<Base, Type> =
           FlagType<Base, Type>[keyof Base];
       type KeysForType<Base, Type, NotType = SuperUnlikelyType> =
